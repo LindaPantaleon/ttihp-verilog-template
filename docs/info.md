@@ -9,7 +9,10 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-Explain how your project works
+This project implements a finite state machine (FSM) using a combination of a Moore and Mealy model. The Moore FSM sets the state output based on C1 and C2 inputs, while the Mealy FSM generates the final output Ca based on the current state and the input I.
+
+The outputs can be observed on the uo_out[1:0] pins. The FSM transitions and outputs are synchronized with the input clock.
+
 
 ## How to test
 
