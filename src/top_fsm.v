@@ -48,7 +48,7 @@ module fsm(
     output wire [1:0] Ca
 );
     wire [1:0] P;
-    wire A;
+    wire A_internal;
 
     fsm_moore moore_fsm (.clk(clk), .reset(reset), .C1(C1), .C2(C2), .A(A), .P(P));
     fsm_mealy mealy_fsm (.clk(clk), .reset(reset), .I(I), .P(P), .A(A), .Ca(Ca));
