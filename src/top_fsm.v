@@ -6,16 +6,16 @@
 `default_nettype none
 
 module tt_um_top_fsm (
-    input  wire [7:0] io_in,
-    output wire [7:0] io_out,
+    input  wire [7:0] ui_in,
+    output wire [7:0] uo_out,
     input  wire clk,
     input  wire rst_n,
     input  wire ena
 );
 
-    wire C1 = io_in[0];
-    wire C2 = io_in[1];
-    wire I  = io_in[2];
+    wire C1 = ui_in[0];
+    wire C2 = ui_in[1];
+    wire I  = ui_in[2];
 
     wire [1:0] Ca;
     wire A;
@@ -30,8 +30,8 @@ module tt_um_top_fsm (
         .Ca(Ca)
     );
 
-    assign io_out[1:0] = Ca;
-    assign io_out[7:2] = 6'b0;
+    assign uo_out[1:0] = Ca;
+    assign uo_out[7:2] = 6'b0;
 
 endmodule
 
