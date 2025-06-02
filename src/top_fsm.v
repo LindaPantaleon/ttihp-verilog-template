@@ -44,10 +44,11 @@ endmodule
 
 module fsm(
     input wire clk, reset,
-    input wire C1, C2, A, I,
+    input wire C1, C2, I,
     output wire [1:0] Ca
 );
     wire [1:0] P;
+    wire A;
 
     fsm_moore moore_fsm (.clk(clk), .reset(reset), .C1(C1), .C2(C2), .A(A), .P(P));
     fsm_mealy mealy_fsm (.clk(clk), .reset(reset), .I(I), .P(P), .A(A), .Ca(Ca));
