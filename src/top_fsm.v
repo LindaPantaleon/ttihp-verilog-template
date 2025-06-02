@@ -7,12 +7,18 @@
 
 module tt_um_top_fsm (
     input  wire [7:0] ui_in,
+    input  wire [7:0] uio_in,
+    output wire [7:0] uio_out,
+    output wire [7:0] uio_oe,
     output wire [7:0] uo_out,
     input  wire clk,
     input  wire rst_n,
     input  wire ena
 );
 
+    assign uio_out = 8'b0;
+    assign uio_oe  = 8'b0;
+    
     wire C1 = ui_in[0];
     wire C2 = ui_in[1];
     wire I  = ui_in[2];
