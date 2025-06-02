@@ -1,27 +1,128 @@
 /*
- * Copyright (c) 2024 Your Name
+ * Copyright (c) 2024 Linda Pantaleón
  * SPDX-License-Identifier: Apache-2.0
  */
 
 `default_nettype none
 
-module tt_um_example (
-    input  wire [7:0] ui_in,    // Dedicated inputs
-    output wire [7:0] uo_out,   // Dedicated outputs
-    input  wire [7:0] uio_in,   // IOs: Input path
-    output wire [7:0] uio_out,  // IOs: Output path
-    output wire [7:0] uio_oe,   // IOs: Enable path (active high: 0=input, 1=output)
-    input  wire       ena,      // always 1 when the design is powered, so you can ignore it
-    input  wire       clk,      // clock
-    input  wire       rst_n     // reset_n - low to reset
+module tt_um_top_fsm (
+    input  wire [7:0] io_in,
+    output wire [7:0] io_out,
+    input  wire clk,
+    input  wire rst
 );
 
-  // All output pins must be assigned. If not used, assign to 0.
-  assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
-  assign uio_out = 0;
-  assign uio_oe  = 0;
+    wire C1 = io_in[0];
+    wire C2 = io_in[1];
+    wire I  = io_in[2];
 
-  // List all unused inputs to prevent warnings
-  wire _unused = &{ena, clk, rst_n, 1'b0};
+    wire [1:0] Ca;
+    wire A;
 
+    fsm my_fsm (
+        .clk(clk),
+        .reset(rst),
+        .C1(C1),
+        .C2(C2),
+        .A(A),
+        .I(I),
+        .Ca(Ca)
+    );
+
+    assign io_out[1:0] = Ca;
+    assign io_out[7:2] = 6'b0;
+
+endmodule
+
+
+module fsm(
+    input wire clk, reset,
+    input wire C1, C2, A, I,
+    output wire [1:0] Ca
+);
+    wire [1:0] P;
+
+    fsm_moore moore_fsm (.clk(clk), .reset(reset), .C1(C1), .C2(C2), .A(A), .P(P));
+    fsm_mealy mealy_fsm (.clk(clk), .reset(reset), .I(I), .P(P), .A(A), .Ca(Ca));
+endmodule
+
+
+module fsm_moore(
+    input wire clk, reset,
+    input wire C1, C2, A,
+    output reg [1:0] P
+);
+
+    reg [1:0] state, nextstate;
+
+    always @(posedge clk or posedge reset)
+        if (reset)
+            state <= 2'b00;
+        else
+            state <= nextstate;
+
+    always @(*) begin
+        case (state)
+            2'b00: if (C1) nextstate = 2'b01;
+                   else if (C2) nextstate = 2'b10;
+                   else nextstate = 2'b00;
+            2'b01: if (C2) nextstate = 2'b11;
+                   else nextstate = 2'b01;
+            2'b10: if (C1) nextstate = 2'b11;
+                   else nextstate = 2'b10;
+            2'b11: nextstate = 2'b11;
+            default: nextstate = 2'b00;
+        endcase
+    end
+
+    always @(*) begin
+        case (state)
+            2'b00: P = 2'b00;
+            2'b01: P = 2'b01;
+            2'b10: P = 2'b10;
+            2'b11: P = 2'b11;
+            default: P = 2'b00;
+        endcase
+    end
+endmodule
+
+
+module fsm_mealy(
+    input wire clk, reset,
+    input wire I,
+    input wire [1:0] P,
+    output reg A,
+    output reg [1:0] Ca
+);
+
+    reg [1:0] state, nextstate;
+
+    always @(posedge clk or posedge reset)
+        if (reset)
+            state <= 2'b00;
+        else
+            state <= nextstate;
+
+    always @(*) begin
+        case (state)
+            2'b00: if (I && P == 2'b01) nextstate = 2'b01;
+                   else if (I && P == 2'b10) nextstate = 2'b10;
+                   else nextstate = 2'b00;
+            2'b01: if (P == 2'b10) nextstate = 2'b10;
+                   else nextstate = 2'b01;
+            2'b10: nextstate = 2'b11;
+            2'b11: nextstate = 2'b11;
+            default: nextstate = 2'b00;
+        endcase
+    end
+
+    always @(*) begin
+        case (state)
+            2'b00: begin A = 0; Ca = 2'b00; end
+            2'b01: begin A = 1; Ca = 2'b01; end
+            2'b10: begin A = 1; Ca = 2'b10; end
+            2'b11: begin A = 0; Ca = 2'b11; end
+            default: begin A = 0; Ca = 2'b00; end
+        endcase
+    end
 endmodule
