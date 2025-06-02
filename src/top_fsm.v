@@ -9,7 +9,7 @@ module tt_um_top_fsm (
     input  wire [7:0] io_in,
     output wire [7:0] io_out,
     input  wire clk,
-    input  wire rst,
+    input  wire rst_n,
     input  wire ena
 );
 
@@ -22,7 +22,7 @@ module tt_um_top_fsm (
 
     fsm my_fsm (
         .clk(clk),
-        .reset(rst),
+        .reset(rst_n),
         .C1(C1),
         .C2(C2),
         .A(A),
