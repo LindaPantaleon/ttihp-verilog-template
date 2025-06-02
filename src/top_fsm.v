@@ -24,14 +24,12 @@ module tt_um_top_fsm (
     wire I  = ui_in[2];
 
     wire [1:0] Ca;
-    wire A;
 
     fsm my_fsm (
         .clk(clk),
         .reset(rst_n),
         .C1(C1),
         .C2(C2),
-        .A(A),
         .I(I),
         .Ca(Ca)
     );
